@@ -10,12 +10,23 @@ namespace RxExtensions
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
-            var notificationObserver = new NotificationsObserver();
 
             var subject = new Subject<Notification>();
             subject
                 .Buffer(TimeSpan.FromSeconds(6))
-                .Subscribe(notificationObserver);
+                .Subscribe(notifications => 
+                {
+                    var unique = notifications.DistinctBy(p => p.ProjectId);
+                    Console.WriteLine($"Received {notifications.Count} notifications, {unique?.Count()} unique");
+
+                    if (unique != null)
+                    {
+                        foreach (var notification in unique)
+                        {
+                            Console.WriteLine($"Subscribed unique: {notification}");
+                        }
+                    }
+                });
                 
 
             for (int i = 0; i < 10; i++)
@@ -57,37 +68,4 @@ namespace RxExtensions
         public string? Name { get; set; }
     }
 
-    public class NotificationsObserver : IObserver<IEnumerable<Notification>>
-    {
-        public void OnCompleted()
-        {
-            // We dont need this .. but for the sake of implementing the interface
-            
-            //throw new NotImplementedException();
-        }
-
-        public void OnError(Exception error)
-        {
-            // We dont need this .. but for the sake of implementing the interface
-
-            //throw new NotImplementedException();
-        }
-
-        public void OnNext(IEnumerable<Notification> value)
-        {
-            if (value.Any())
-            {
-                foreach (var notification in value)
-                {
-                    Console.WriteLine($"Observer: {notification}");
-                }
-
-                var uniqueProjects = value.DistinctBy(p => p.ProjectId);
-                foreach (var project in uniqueProjects)
-                {
-                    Console.WriteLine($"Observer unique: {project}");
-                }
-            }
-        }
-    }
 }
