@@ -10,10 +10,13 @@ namespace RxExtensions
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
+            var notificationObserver = new NotificationsObserver();
+
             var subject = new Subject<Notification>();
             subject
                 .Buffer(TimeSpan.FromSeconds(6))
-                .Subscribe(notifications => Console.WriteLine($"Received {notifications?.Count} notifications"));
+                .Subscribe(notificationObserver);
+                
 
             for (int i = 0; i < 10; i++)
             {
@@ -52,5 +55,33 @@ namespace RxExtensions
     {
         public int Id { get; set; } = 0;
         public string? Name { get; set; }
+    }
+
+    public class NotificationsObserver : IObserver<IEnumerable<Notification>>
+    {
+        public void OnCompleted()
+        {
+            // We dont need this .. but for the sake of implementing the interface
+            
+            //throw new NotImplementedException();
+        }
+
+        public void OnError(Exception error)
+        {
+            // We dont need this .. but for the sake of implementing the interface
+
+            //throw new NotImplementedException();
+        }
+
+        public void OnNext(IEnumerable<Notification> value)
+        {
+            if (value.Any())
+            {
+                foreach (var notification in value)
+                {
+                    Console.WriteLine($"Observer: {notification}");
+                }
+            }
+        }
     }
 }
