@@ -81,6 +81,12 @@ namespace RxExtensions
                 {
                     Console.WriteLine($"Observer: {notification}");
                 }
+
+                var uniqueProjects = value.DistinctBy(p => p.ProjectId);
+                foreach (var project in uniqueProjects)
+                {
+                    Console.WriteLine($"Observer unique: {project}");
+                }
             }
         }
     }
